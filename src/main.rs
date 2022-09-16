@@ -1,5 +1,6 @@
 use clap::{Parser, Subcommand};
 
+mod prime_time;
 mod smoke_test;
 
 #[derive(Parser)]
@@ -16,6 +17,7 @@ enum Commands {
         client_string: Option<String>,
         client_destination_url: Option<String>,
     },
+    PrimeTime,
 }
 
 fn main() {
@@ -37,5 +39,6 @@ fn main() {
             ("client", None) => smoke_test::run_client(client_destination_url, b"Hello world!"),
             _ => panic!("Invalid smoketest argument '{}'.", client_or_server),
         },
+        Commands::PrimeTime => protohackers::run_server(5, prime_time::handle_connection),
     }
 }
