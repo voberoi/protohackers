@@ -1,22 +1,10 @@
 use std::io::{BufReader, Read, Write};
-use std::net::{Shutdown, TcpListener, TcpStream};
+use std::net::{Shutdown, TcpStream};
 use std::str;
 
 use log::debug;
-use threadpool::ThreadPool;
 
-const NUM_WORKERS: usize = 5;
-
-pub fn run_server() {
-    let listener = TcpListener::bind("0.0.0.0:5001").unwrap();
-
-    let pool = ThreadPool::new(NUM_WORKERS);
-    for stream in listener.incoming() {
-        pool.execute(move || handle_connection(stream.unwrap()));
-    }
-}
-
-fn handle_connection(mut stream: TcpStream) {
+pub fn handle_connection(mut stream: TcpStream) {
     debug!("Handling a connection.");
 
     debug!("Reading bytes sent by client.");

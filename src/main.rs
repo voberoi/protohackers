@@ -28,7 +28,9 @@ fn main() {
             client_string,
             client_destination_url,
         } => match (client_or_server.as_str(), client_string) {
-            ("server", _) => smoke_test::run_server(),
+            ("server", _) => {
+                protohackers::run_server(5, smoke_test::handle_connection);
+            }
             ("client", Some(client_string)) => {
                 smoke_test::run_client(client_destination_url, client_string.as_bytes())
             }
