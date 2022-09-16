@@ -32,12 +32,17 @@ fn handle_connection(mut stream: TcpStream) {
     debug!("Connection handled.");
 }
 
-pub fn run_client(bytes: &[u8]) {
+pub fn run_client(url: Option<String>, bytes: &[u8]) {
     debug!(
         "Writing {} to server.",
         String::from_utf8(bytes.to_vec()).unwrap()
     );
-    let mut stream = TcpStream::connect("127.0.0.1:5001").unwrap();
+    let url = match url {
+        Some(url_string) => url_string,
+        None => "127.0.0.1:5001".to_string(),
+    };
+
+    let mut stream = TcpStream::connect(url).unwrap();
     stream.write_all(bytes).unwrap();
     stream.shutdown(Shutdown::Write).unwrap();
     debug!("Bytes written.");
