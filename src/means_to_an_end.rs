@@ -116,7 +116,7 @@ impl Session {
 
 // The derivation of *Eq and *Ord below will compare timestamp first
 // then price, which is fine. We want this to be ordered by timestamp.
-#[derive(PartialEq, Eq, PartialOrd, Ord)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Debug)]
 struct AssetPrice {
     timestamp: i32,
     price: i32,
@@ -144,10 +144,10 @@ impl AssetPriceDB {
         }
 
         let mut num_assets = 0;
-        let mut total_asset_price = 0;
+        let mut total_asset_price = 0i64;
         for (_, v) in self.asset_prices.iter().enumerate() {
-            if mintime <= v.timestamp && maxtime >= v.timestamp {
-                total_asset_price += v.price;
+            if mintime <= v.timestamp && v.timestamp <= maxtime {
+                total_asset_price += v.price as i64;
                 num_assets += 1;
             }
         }
@@ -155,7 +155,7 @@ impl AssetPriceDB {
         if num_assets == 0 {
             0
         } else {
-            total_asset_price / num_assets
+            (total_asset_price / num_assets) as i32
         }
     }
 
