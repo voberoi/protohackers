@@ -1,6 +1,10 @@
 use std::net::{TcpListener, TcpStream};
 use threadpool::ThreadPool;
 
+pub mod means_to_an_end;
+pub mod prime_time;
+pub mod smoke_test;
+
 pub fn run_server<F>(port: Option<usize>, num_workers: usize, connection_handler: F)
 where
     F: Fn(TcpStream) + Send + Copy + 'static,

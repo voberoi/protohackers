@@ -1,7 +1,6 @@
 use clap::{Parser, Subcommand};
 
-mod prime_time;
-mod smoke_test;
+use protohackers::{means_to_an_end, prime_time, smoke_test};
 
 #[derive(Parser)]
 #[clap(author, version, about, long_about = None)]
@@ -20,6 +19,7 @@ enum Commands {
         client_destination_url: Option<String>,
     },
     PrimeTime,
+    MeansToAnEnd,
 }
 
 fn main() {
@@ -43,6 +43,9 @@ fn main() {
         },
         Commands::PrimeTime => {
             protohackers::run_server(args.port, 5, prime_time::handle_connection)
+        }
+        Commands::MeansToAnEnd => {
+            protohackers::run_server(args.port, 5, means_to_an_end::handle_connection)
         }
     }
 }

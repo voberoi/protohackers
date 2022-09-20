@@ -14,11 +14,16 @@ pub struct ServerProcess {
 
 enum ServerType {
     PrimeTime,
+    MeansToAnEnd,
 }
 
 impl ServerProcess {
     pub fn run_prime_time() -> Self {
         ServerProcess::run(ServerType::PrimeTime)
+    }
+
+    pub fn run_means_to_an_end() -> Self {
+        ServerProcess::run(ServerType::MeansToAnEnd)
     }
 
     // Runs a server process of the given type and waits to be able to connect
@@ -29,6 +34,7 @@ impl ServerProcess {
         let mut cargo_args = vec!["run", "--", "-p", port];
         let mut args = match server_type {
             ServerType::PrimeTime => vec!["prime-time"],
+            ServerType::MeansToAnEnd => vec!["means-to-an-end"],
         };
         cargo_args.append(&mut args);
 
