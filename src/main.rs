@@ -8,6 +8,8 @@ mod smoke_test;
 struct Cli {
     #[clap(subcommand)]
     command: Commands,
+    #[clap(short, long, value_parser)]
+    port: Option<usize>,
 }
 
 #[derive(Subcommand)]
@@ -31,7 +33,7 @@ fn main() {
             client_destination_url,
         } => match (client_or_server.as_str(), client_string) {
             ("server", _) => {
-                protohackers::run_server(5, smoke_test::handle_connection);
+                protohackers::run_server(args.port, 5, smoke_test::handle_connection);
             }
             ("client", Some(client_string)) => {
                 smoke_test::run_client(client_destination_url, client_string.as_bytes())
@@ -39,6 +41,8 @@ fn main() {
             ("client", None) => smoke_test::run_client(client_destination_url, b"Hello world!"),
             _ => panic!("Invalid smoketest argument '{}'.", client_or_server),
         },
-        Commands::PrimeTime => protohackers::run_server(5, prime_time::handle_connection),
+        Commands::PrimeTime => {
+            protohackers::run_server(args.port, 5, prime_time::handle_connection)
+        }
     }
 }
