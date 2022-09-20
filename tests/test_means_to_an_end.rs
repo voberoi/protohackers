@@ -146,8 +146,67 @@ fn test_single_client() {
     assert_eq!(mean, 275);
 }
 
-// TODO: Test multiple clients not seeing the same DB.
-// TODO: Test closing a client and starting afresh.
+#[test]
+fn test_mutiple_clients() {
+    let server = common::ServerProcess::run_means_to_an_end();
+
+    let mut stream1 = server.get_stream();
+    insert(&mut stream1, 300, 100);
+    insert(&mut stream1, 400, 200);
+    insert(&mut stream1, 650, 250);
+
+    let mut stream2 = server.get_stream();
+    insert(&mut stream2, 1300, 200);
+    insert(&mut stream2, 1400, 300);
+    insert(&mut stream2, 1650, 350);
+
+    let mut stream3 = server.get_stream();
+    insert(&mut stream3, 2300, 300);
+    insert(&mut stream3, 2400, 400);
+    insert(&mut stream3, 2650, 450);
+
+    let mut mean = query(&mut stream1, 200, 700);
+    assert_eq!(mean, 183);
+
+    mean = query(&mut stream1, 200, 500);
+    assert_eq!(mean, 150);
+
+    mean = query(&mut stream2, 1200, 1700);
+    assert_eq!(mean, 283);
+
+    mean = query(&mut stream2, 1200, 1500);
+    assert_eq!(mean, 250);
+
+    mean = query(&mut stream3, 2200, 2700);
+    assert_eq!(mean, 383);
+
+    mean = query(&mut stream3, 2200, 2500);
+    assert_eq!(mean, 350);
+
+    // Test inserting a new value for the same timestamp on one connection.
+    insert(&mut stream1, 300, 300);
+
+    // This mean changes.
+    mean = query(&mut stream1, 200, 700);
+    assert_eq!(mean, 250);
+
+    // This mean changes.
+    mean = query(&mut stream1, 200, 500);
+    assert_eq!(mean, 250);
+
+    // The rest of these remain the same.
+    mean = query(&mut stream2, 1200, 1700);
+    assert_eq!(mean, 283);
+
+    mean = query(&mut stream2, 1200, 1500);
+    assert_eq!(mean, 250);
+
+    mean = query(&mut stream3, 2200, 2700);
+    assert_eq!(mean, 383);
+
+    mean = query(&mut stream3, 2200, 2500);
+    assert_eq!(mean, 350);
+}
 
 fn insert(stream: &mut TcpStream, timestamp: i32, price: i32) {
     let message = Message::Insert { timestamp, price };
